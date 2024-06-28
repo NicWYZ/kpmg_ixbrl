@@ -1,3 +1,6 @@
+"use client"
+import FileUpload from "@/components/FileUpload";
+
 export default function HomePage(){
   return (
     <div className="bg-gray-100 h-screen flex flex-col">
@@ -9,12 +12,11 @@ export default function HomePage(){
         </div>
       </div>
 
-      <div className="w-full flex-1 flex flex-col items-center mt-4 px-4">
+      <div className="container mx-auto mt-4 px-4 flex-1 flex flex-col items-center">
         <div className="w-full flex justify-between items-center mb-4">
-          <button className="bg-blue-600 text-white w-24 h-12 flex items-center justify-center rounded-full">Import</button>
+          <FileUpload />
           <button className="bg-purple-600 text-white w-24 h-12 flex items-center justify-center rounded-full">Tag</button>
         </div>
-        <div className="w-full bg-gray-300 flex-1 rounded-lg mb-4"></div>
       </div>
     </div>
   );

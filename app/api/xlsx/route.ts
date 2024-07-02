@@ -1,59 +1,41 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import nextConnect from 'next-connect';
-import multer from 'multer';
+import { NextRequest, NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
 import ExcelJS from 'exceljs';
 
-// Multer setup for handling file uploads
-interface MulterRequest extends NextApiRequest {
-    file: Express.Multer.File;
-  }
-  
-const upload = multer({ dest: 'uploads/' });
-
-const apiRoute = nextConnect<MulterRequest, NextApiResponse>({
-  onError: (error: any, req: MulterRequest, res: NextApiResponse) => {
-    res.status(501).json({ error: `Something went wrong! ${error.message}` });
-  },
-  onNoMatch: (req: MulterRequest, res: NextApiResponse) => {
-    res.status(405).json({ error: `Method '${req.method}' Not Allowed` });
-  },
-});
-
-apiRoute.use(upload.single('file'));
-
-apiRoute.post(async (req: MulterRequest, res: NextApiResponse) => {
-  const file = req.file;
-  if (!file) {
-    return res.status(400).send('No file uploaded.');
-  }
-
-  const workbook = new ExcelJS.Workbook();
-
+export async function POST(req: NextRequest) {
   try {
-    await workbook.xlsx.load(file.buffer);
+    // Get the file from the request
+    const formData = await req.formData();
+    const file = formData.get('file') as File;
+
+    if (!file) {
+      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+    }
+
+    // Read the file content
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Load the Excel file using ExcelJS
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(buffer);
+
+    // Convert the Excel data to HTML
     let html = '<table class="table-auto border-collapse border border-gray-400">';
-    
-    workbook.eachSheet((sheet, sheetId) => {
-      sheet.eachRow((row, rowIndex) => {
+    workbook.eachSheet((sheet) => {
+      sheet.eachRow((row) => {
         html += '<tr class="border border-gray-300">';
-        row.eachCell((cell, colIndex) => {
+        row.eachCell((cell) => {
           html += `<td class="border border-gray-300 p-2">${cell.value}</td>`;
         });
         html += '</tr>';
       });
     });
-    
     html += '</table>';
-    res.send(html);
+
+    return NextResponse.json({ html }, { status: 200 });
   } catch (error) {
-    res.status(500).send('Error converting .xlsx file to HTML');
+    console.error('Error processing the file:', error);
+    return NextResponse.json({ error: 'Error processing the file' }, { status: 500 });
   }
-});
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-export default apiRoute;
+}

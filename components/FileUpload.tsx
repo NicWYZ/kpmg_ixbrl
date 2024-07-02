@@ -1,8 +1,7 @@
-import React, { useState, useRef } from 'react';
-import axios from 'axios';
+import React, { useRef, useState } from 'react';
 
-export default function FileUpload() {
-    const [htmlContent, setHtmlContent] = useState<string>('');
+const FileUploadComponent: React.FC = () => {
+  const [htmlContent, setHtmlContent] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,12 +14,17 @@ export default function FileUpload() {
     const fileType = file.name.endsWith('.docx') ? 'docx' : 'xlsx';
 
     try {
-      const response = await axios.post(`/api/${fileType}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await fetch(`/api/${fileType}`, {
+        method: 'POST',
+        body: formData,
       });
-      setHtmlContent(response.data);
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setHtmlContent(data.html);
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -31,7 +35,7 @@ export default function FileUpload() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-7xl">
       <button onClick={handleClick} className="bg-blue-600 text-white w-24 h-12 flex items-center justify-center rounded-full mb-4">
         Import
       </button>
@@ -43,8 +47,10 @@ export default function FileUpload() {
         style={{ display: 'none' }}
       />
       <div className="bg-gray-300 flex-1 rounded-lg mb-4 p-4 overflow-auto">
-        <div dangerouslySetInnerHTML={{ __html: htmlContent }}></div>
+        {htmlContent && <div dangerouslySetInnerHTML={{ __html: htmlContent }} />}
       </div>
     </div>
-    );
+  );
 };
+
+export default FileUploadComponent;

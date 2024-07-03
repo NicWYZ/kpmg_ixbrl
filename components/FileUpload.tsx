@@ -1,7 +1,10 @@
-import React, { useRef, useState } from 'react';
+import  { useRef } from 'react';
 
-const FileUploadComponent: React.FC = () => {
-  const [htmlContent, setHtmlContent] = useState<string | null>(null);
+interface FileUploadProps {
+  setHtmlContent: (html: string) => void;
+}
+
+export default function FileUploadComponent({ setHtmlContent }: FileUploadProps){
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,6 +28,7 @@ const FileUploadComponent: React.FC = () => {
 
       const data = await response.json();
       setHtmlContent(data.html);
+
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -35,8 +39,8 @@ const FileUploadComponent: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl">
-      <button onClick={handleClick} className="bg-blue-600 text-white w-24 h-12 flex items-center justify-center rounded-full mb-4">
+    <div className= 'flex justify-center items-center'>
+      <button onClick={handleClick} className="bg-blue-600 text-white w-24 h-12 flex items-center justify-center rounded-full">
         Import
       </button>
       <input
@@ -46,11 +50,6 @@ const FileUploadComponent: React.FC = () => {
         onChange={handleFileUpload}
         style={{ display: 'none' }}
       />
-      <div className="bg-gray-300 flex-1 rounded-lg mb-4 p-4 overflow-auto">
-        {htmlContent && <div dangerouslySetInnerHTML={{ __html: htmlContent }} />}
-      </div>
     </div>
   );
 };
-
-export default FileUploadComponent;

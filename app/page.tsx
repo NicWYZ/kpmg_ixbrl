@@ -3,20 +3,23 @@ import FileUpload from "@/components/FileUpload";
 import HighlightableHTML from "@/components/HighlightableHTML";
 import TagModal from "@/components/TagModal";
 import PreviewModal from "@/components/PreviewModal";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Tooltip } from "react-tooltip";
 import { saveAs } from 'file-saver'
 import 'react-tooltip/dist/react-tooltip.css'
 
 export default function HomePage() {
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
-  const [selectedText, setSelectedText] = useState<string | null>(null);
+  //const [selectedText, setSelectedText] = useState<string | null>(null);
   const [isTaggingModalOpen, setIsTaggingModalOpen] = useState<boolean>(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
 
+  const selectedText = useRef<string>('')
+
 
   const handleHighlight = (highlightedText: string) => {
-    setSelectedText(highlightedText);
+    //setSelectedText(highlightedText);
+    selectedText.current = highlightedText;
   };
 
   const handleTag = (tagName: string, tagType: string, attributes: Record<string, string>) => {
@@ -24,21 +27,22 @@ export default function HomePage() {
       const taggedText = `<span class="tagged tooltip" style="background-color: yellow" data-tooltip-id="tagged element" data-tooltip-content="${tagName}" data-tooltip-place="top">
                             <ix:${tagType} ${Object.entries(attributes)
                               .map(([key, value]) => `${key}="${value}"`)
-                              .join(" ")}>${selectedText}
+                              .join(" ")}>
+                              ${selectedText.current}
                             </ix:${tagType}>
                           </span>`;
 
-      const updatedHtmlContent = htmlContent.replace(selectedText, taggedText);
+      const updatedHtmlContent = htmlContent.replace(selectedText.current, taggedText);
 
       setHtmlContent(updatedHtmlContent);
-      setSelectedText(null);
+      //setSelectedText(null);
+      selectedText.current = '';
     }
   };
 
   const handleExport = () => {
     if (!htmlContent) return;
   
-    // Convert the HTML content to XHTML
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
     

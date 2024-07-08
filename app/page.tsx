@@ -5,6 +5,7 @@ import TagModal from "@/components/TagModal";
 import PreviewModal from "@/components/PreviewModal";
 import { useState } from "react";
 import { Tooltip } from "react-tooltip";
+import { saveAs } from 'file-saver'
 import 'react-tooltip/dist/react-tooltip.css'
 
 export default function HomePage() {
@@ -12,6 +13,7 @@ export default function HomePage() {
   const [selectedText, setSelectedText] = useState<string | null>(null);
   const [isTaggingModalOpen, setIsTaggingModalOpen] = useState<boolean>(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
+
 
   const handleHighlight = (highlightedText: string) => {
     setSelectedText(highlightedText);
@@ -33,6 +35,37 @@ export default function HomePage() {
     }
   };
 
+  const handleExport = () => {
+    if (!htmlContent) return;
+  
+    // Convert the HTML content to XHTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+    
+    // Function to convert HTML document to XHTML string
+    const serializeToXHTML = (doc: Document) => {
+      let xhtmlString = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+      xhtmlString += `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n`;
+      xhtmlString += `<html xmlns="http://www.w3.org/1999/xhtml">\n`;
+      xhtmlString += `<head>\n<title>Exported XHTML</title>\n</head>\n`;
+      xhtmlString += `<body>\n`;
+  
+      const serializer = new XMLSerializer();
+      doc.body.childNodes.forEach((node) => {
+        xhtmlString += serializer.serializeToString(node);
+      });
+  
+      xhtmlString += `\n</body>\n</html>`;
+      return xhtmlString;
+    };
+  
+    const xhtmlContent = serializeToXHTML(doc);
+  
+    // Create a Blob from the XHTML content
+    const blob = new Blob([xhtmlContent], { type: 'application/xhtml+xml' });
+    saveAs(blob, 'exported_file.xhtml');
+  }
+
   return (
     <div className="bg-gray-100 h-screen flex flex-col">
       <div className="w-full bg-gradient-to-r from-blue-700 to-purple-700 text-white py-4 flex justify-between items-center px-4">
@@ -44,7 +77,10 @@ export default function HomePage() {
           >
             Preview
           </button>
-          <button className="bg-black text-white w-24 h-12 flex items-center justify-center rounded-full">
+          <button 
+            onClick={handleExport}
+            className="bg-black text-white w-24 h-12 flex items-center justify-center rounded-full"
+          >
             Export
           </button>
         </div>

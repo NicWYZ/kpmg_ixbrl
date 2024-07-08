@@ -1,7 +1,7 @@
 interface TagModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTag: (tagName: string, attributes: Record<string, string>) => void;
+  onTag: (tagName: string, tagType: string, attributes: Record<string, string>) => void;
 }
 
 export default function TagModal({ isOpen, onClose, onTag }: TagModalProps) {
@@ -20,7 +20,7 @@ export default function TagModal({ isOpen, onClose, onTag }: TagModalProps) {
 
     const tagType = 'nonFraction'
     
-    onTag(tagType, attributes);
+    onTag(tagName, tagType, attributes);
     onClose();
   };
 

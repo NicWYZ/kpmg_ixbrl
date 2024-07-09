@@ -10,7 +10,6 @@ import 'react-tooltip/dist/react-tooltip.css'
 
 export default function HomePage() {
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
-  //const [selectedText, setSelectedText] = useState<string | null>(null);
   const [isTaggingModalOpen, setIsTaggingModalOpen] = useState<boolean>(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
 
@@ -18,7 +17,6 @@ export default function HomePage() {
 
 
   const handleHighlight = (highlightedText: string) => {
-    //setSelectedText(highlightedText);
     selectedText.current = highlightedText;
   };
 
@@ -35,7 +33,6 @@ export default function HomePage() {
       const updatedHtmlContent = htmlContent.replace(selectedText.current, taggedText);
 
       setHtmlContent(updatedHtmlContent);
-      //setSelectedText(null);
       selectedText.current = '';
     }
   };

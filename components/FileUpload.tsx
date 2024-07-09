@@ -2,9 +2,10 @@ import  { useRef } from 'react';
 
 interface FileUploadProps {
   setHtmlContent: (html: string) => void;
+  setFileType : (fileType : string) => void
 }
 
-export default function FileUploadComponent({ setHtmlContent }: FileUploadProps){
+export default function FileUploadComponent({ setHtmlContent,setFileType }: FileUploadProps){
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,6 +16,7 @@ export default function FileUploadComponent({ setHtmlContent }: FileUploadProps)
     formData.append('file', file);
 
     const fileType = file.name.endsWith('.docx') ? 'docx' : 'xlsx';
+    setFileType(fileType)
 
     try {
       const response = await fetch(`/api/${fileType}`, {

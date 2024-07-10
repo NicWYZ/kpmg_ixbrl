@@ -47,7 +47,7 @@ export default function FileUploadComponent({ setHtmlContent,setFileType }: File
       </button>
       <input
         type="file"
-        accept=".docx,.xlsx"
+        accept=".docx,.xlsx,.doc"
         ref={fileInputRef}
         onChange={handleFileUpload}
         style={{ display: 'none' }}

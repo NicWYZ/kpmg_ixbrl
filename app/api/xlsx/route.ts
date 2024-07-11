@@ -21,15 +21,48 @@ export async function POST(req: NextRequest) {
 
     // Convert the Excel data to HTML
     let html = '<table class="table-auto border-collapse border border-gray-400">';
+
     workbook.eachSheet((sheet) => {
+      const merges: { [key: string]: { master: string; rowspan: number; colspan: number } } = {};
+
+      // Collect all merged cells
+      sheet.model.merges.forEach((merge: string) => {
+        const [start, end] = merge.split(':');
+        const startCell = sheet.getCell(start);
+        const endCell = sheet.getCell(end);
+        const startRow = parseInt(startCell.row as any, 10);
+        const endRow = parseInt(endCell.row as any, 10);
+        const startCol = parseInt(startCell.col as any, 10);
+        const endCol = parseInt(endCell.col as any, 10);
+        const rowspan = endRow - startRow + 1;
+        const colspan = endCol - startCol + 1;
+
+        for (let row = startRow; row <= endRow; row++) {
+          for (let col = startCol; col <= endCol; col++) {
+            const cellAddress = `${row}:${col}`;
+            merges[cellAddress] = { master: startCell.address, rowspan, colspan };
+          }
+        }
+      });
+
       sheet.eachRow((row) => {
         html += '<tr class="border border-gray-300">';
-        row.eachCell((cell) => {
-          html += `<td class="border border-gray-300 p-2">${cell.value}</td>`;
+        row.eachCell({ includeEmpty: true }, (cell) => {
+          const cellAddress = `${cell.row}:${cell.col}`;
+          const merge = merges[cellAddress];
+
+          if (merge && cell.address === merge.master) {
+            const rowspan = merge.rowspan;
+            const colspan = merge.colspan;
+            html += `<td class="border border-gray-300 p-2" rowspan="${rowspan}" colspan="${colspan}">${cell.value}</td>`;
+          } else if (!merge) {
+            html += `<td class="border border-gray-300 p-2">${cell.value !== null ? cell.value : ''}</td>`;
+          }
         });
         html += '</tr>';
       });
     });
+
     html += '</table>';
 
     return NextResponse.json({ html }, { status: 200 });

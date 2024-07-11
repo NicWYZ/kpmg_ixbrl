@@ -18,7 +18,7 @@ export default function HighlightableHTML({
 
   return (
     <div
-      className="highlightable-html bg-white flex-1 rounded-lg mb-4 p-4 overflow-auto w-full"
+      className="bg-white flex-1 rounded-lg mb-4 p-4 overflow-auto w-full max-h-screen highlightable-html"
       onMouseUp={handleMouseUp}
       dangerouslySetInnerHTML={{ __html: safeHtmlContent }}
     >

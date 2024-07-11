@@ -83,7 +83,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="bg-gray-100 h-screen flex flex-col">
+    <div className="bg-gray-100 min-h-screen flex flex-col">
       <div className="w-full bg-gradient-to-r from-blue-700 to-purple-700 text-white py-4 flex justify-between items-center px-4">
         <h1 className="text-5xl font-bold">KTAG</h1>
         <div className="flex space-x-4">

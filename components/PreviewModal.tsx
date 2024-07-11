@@ -14,34 +14,34 @@ interface TagData {
 }
 
 const extractTags = (htmlContent: string): TagData[] => {
-    if (typeof window === 'undefined') {
-      return [];
-    }
-  
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, 'text/html');
-    const tags: TagData[] = [];
-    
-    doc.querySelectorAll('.tagged.tooltip').forEach((element) => {
-      const tag = element.querySelector('ix\\:nonFraction, ix\\:otherTag'); // Adjust for your specific tag names
-      if (tag) {
-        const attributes: Record<string, string> = {};
-        Array.from(tag.attributes).forEach((attr) => {
-          attributes[attr.name] = attr.value;
-        });
-        tags.push({
-          tagName: element.getAttribute('data-tooltip-content') || '',
-          tagType: tag.tagName,
-          value: tag.innerHTML,
-          attributes,
-        });
-      }
-    });
-  
-    return tags;
-  };
+  if (typeof window === 'undefined') {
+    return [];
+  }
 
-export default function PreviewModal({ isOpen, onClose, htmlContent }: PreviewModalProps){
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(htmlContent, 'text/html');
+  const tags: TagData[] = [];
+
+  doc.querySelectorAll('.tagged.tooltip').forEach((element) => {
+    const tag = element.querySelector('ix\\:nonFraction, ix\\:null'); // Adjust for your specific tag names
+    if (tag) {
+      const attributes: Record<string, string> = {};
+      Array.from(tag.attributes).forEach((attr) => {
+        attributes[attr.name] = attr.value;
+      });
+      tags.push({
+        tagName: element.getAttribute('data-tooltip-content') || '',
+        tagType: tag.tagName,
+        value: tag.innerHTML,
+        attributes,
+      });
+    }
+  });
+
+  return tags;
+};
+
+export default function PreviewModal({ isOpen, onClose, htmlContent }: PreviewModalProps) {
   const [selectedTag, setSelectedTag] = useState<TagData | null>(null);
   const [tags, setTags] = useState<TagData[]>([]);
 
@@ -55,7 +55,7 @@ export default function PreviewModal({ isOpen, onClose, htmlContent }: PreviewMo
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-75">
-      <div className="bg-white rounded-lg p-4 w-2/3">
+      <div className="bg-white rounded-lg p-4 w-2/3 max-h-3/4 overflow-auto">
         <h2 className="text-xl font-bold mb-4">Preview Tags</h2>
         <div className="flex">
           <table className="w-1/2 border">
@@ -97,4 +97,4 @@ export default function PreviewModal({ isOpen, onClose, htmlContent }: PreviewMo
       </div>
     </div>
   );
-};
+}

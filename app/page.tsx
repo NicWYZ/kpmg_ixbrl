@@ -7,6 +7,7 @@ import { useState, useRef } from "react";
 import { Tooltip } from "react-tooltip";
 import { saveAs } from "file-saver";
 import "react-tooltip/dist/react-tooltip.css";
+import taxonomyData from "@/taxonomyData.json"; // Adjust the path based on your project structure
 
 export default function HomePage() {
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
@@ -25,7 +26,7 @@ export default function HomePage() {
     tagType: string,
     attributes: Record<string, string>
   ) => {
-    if (htmlContent && selectedText) {
+    if (htmlContent && selectedText.current) {
       const taggedText = `<span class="tagged tooltip" style="background-color: yellow" data-tooltip-id="tagged element" data-tooltip-content="${tagName}" data-tooltip-place="top">
                             <ix:${tagType} ${Object.entries(attributes)
         .map(([key, value]) => `${key}="${value}"`)
@@ -46,37 +47,37 @@ export default function HomePage() {
 
   const handleExport = () => {
     if (!htmlContent) return;
-  
+
     const entryPoint =
       fileType === "docx"
         ? "http://xbrl.ird.gov.hk/taxonomy/2024-04-01/ird_fs_entry_point_2024-04-01.xsd"
         : "http://xbrl.ird.gov.hk/taxonomy/2024-04-01/ird_tc_entry_point_2024-04-01.xsd";
-  
+
     const namespacePrefix = fileType === "docx" ? "ird_fs" : "ird_tc";
     const namespaceURI = `http://xbrl.ird.gov.hk/taxonomy/2024-04-01/${namespacePrefix}`;
-  
+
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, "text/html");
-  
+
     // Function to convert HTML document to XHTML string
     const serializeToXHTML = (doc: Document) => {
       let xhtmlString = `<?xml version="1.0" encoding="UTF-8"?>\n`;
       xhtmlString += `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n`;
-      xhtmlString += `<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:utr="http://www.xbrl.org/2009/utr" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2020-02-12" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xl="http://www.xbrl.org/2003/XLink" xmlns:nonnum="http://www.xbrl.org/dtr/type/non-numeric" xmlns:num="http://www.xbrl.org/dtr/type/numeric" xmlns:xbrldt="http://xbrl.org/2005/xbrldt" xmlns:${namespacePrefix}="${namespaceURI}">\n`;
+      xhtmlString += `<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:utr="http://www.xbrl.org/2009/utr" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2020-02-12" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xl="http://www.xbrl.org/2003/XLink" xmlns:nonnum="http://www.xbrl.org/dtr/type/non-numeric" xmlns:num="http://www.xbrl.org/dtr/type/numeric" xmlns:${namespacePrefix}="${namespaceURI}">\n`;
       xhtmlString += `<head>\n<title>Exported XHTML</title>\n</head>\n`;
       xhtmlString += `<body>\n<ix:references xml:lang="en">\n<link:schemaRef xlink:type="simple" xlink:href="${entryPoint}"></link:schemaRef>\n</ix:references>\n`;
-  
+
       const serializer = new XMLSerializer();
       doc.body.childNodes.forEach((node) => {
         xhtmlString += serializer.serializeToString(node);
       });
-  
+
       xhtmlString += `\n</body>\n</html>`;
       return xhtmlString;
     };
-  
+
     const xhtmlContent = serializeToXHTML(doc);
-  
+
     // Create a Blob from the XHTML content
     const blob = new Blob([xhtmlContent], { type: "application/xhtml+xml" });
     saveAs(blob, "exported_file.xhtml");
@@ -126,6 +127,7 @@ export default function HomePage() {
         isOpen={isTaggingModalOpen}
         onClose={() => setIsTaggingModalOpen(false)}
         onTag={handleTag}
+        taxonomyData={taxonomyData}
       />
       <PreviewModal
         isOpen={isPreviewModalOpen}

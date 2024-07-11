@@ -8,19 +8,20 @@ export default function HighlightableHTML({
   onHighlight,
 }: HighlightableHTMLProps) {
   const handleMouseUp = () => {
-      const selection = window.getSelection();
-      if (selection && selection.toString().length > 0) {
-        onHighlight(selection.toString());
-      }
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      onHighlight(selection.toString());
+    }
   };
 
   const safeHtmlContent = htmlContent || "";
 
   return (
     <div
-      className="bg-white flex-1 rounded-lg mb-4 p-4 overflow-auto w-full"
+      className="highlightable-html bg-white flex-1 rounded-lg mb-4 p-4 overflow-auto w-full"
       onMouseUp={handleMouseUp}
       dangerouslySetInnerHTML={{ __html: safeHtmlContent }}
-    ></div>
+    >
+    </div>
   );
 }

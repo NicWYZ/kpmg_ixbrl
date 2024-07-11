@@ -30,7 +30,6 @@ export default function FileUploadComponent({ setHtmlContent,setFileType }: File
 
       const data = await response.json();
       setHtmlContent(data.html);
-
     } catch (error) {
       console.error('Error uploading file:', error);
     }

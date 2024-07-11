@@ -1,3 +1,66 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.style-underlined {
+    text-decoration: underline;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid black;
+    padding: 8px;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+
+  .highlightable-html h1 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 2.5em;
+    margin: 0.5em 0;
+    color: black; 
+  }
+  
+  .highlightable-html h2 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 2em;
+    margin: 0.5em 0;
+    color: black; 
+  }
+  
+  .highlightable-html h3 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.75em;
+    margin: 0.5em 0;
+    color: black; 
+  }
+  
+  .highlightable-html h4 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.5em;
+    margin: 0.5em 0;
+    color: black; 
+  }
+  
+  .highlightable-html h5 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.25em;
+    margin: 0.5em 0;
+    color: black; 
+  }
+  
+  .highlightable-html h6 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    margin: 0.5em 0;
+    color: black; 
+  }

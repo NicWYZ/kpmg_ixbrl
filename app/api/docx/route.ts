@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import mammoth from 'mammoth';
 
-
 export async function POST(req: NextRequest) {
   try {
     // Get the file from the request
@@ -16,8 +15,15 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Convert the file to HTML using mammoth
-    const result = await mammoth.convertToHtml({ buffer });
+    // Convert the file to HTML using mammoth with custom styles
+    const options = {
+      styleMap: [
+        "u => span.style-underlined",
+      ]
+    };
+
+    const result = await mammoth.convertToHtml({ buffer }, options);
+    console.log(result.value)
 
     return NextResponse.json({ html: result.value }, { status: 200 });
   } catch (error) {

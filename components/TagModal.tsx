@@ -1,70 +1,59 @@
-import React from 'react';
+import taxonomyData from "@/taxonomyData.json";
 
 interface TagModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTag: (conceptName: string, tagType: string, attributes: Record<string, string>) => void;
-  taxonomyData: {
-    FinancialStatement: Array<Record<string, string | number | null>>;
-    TaxComputation: Array<Record<string, string | number | null>>;
-  };
+  onTag: (concept: any) => void;
 }
 
-export default function TagModal({ isOpen, onClose, onTag, taxonomyData }: TagModalProps) {
+export default function TagModal({ isOpen, onClose, onTag }: TagModalProps) {
   if (!isOpen) return null;
 
-  const handleTagClick = (concept: Record<string, string | number | null>) => {
-    const { conceptName, tagType, contextRef, unitRef, name, id, scale, decimals, format } = concept;
-    const attributes = {
-      contextRef: contextRef as string,
-      unitRef: unitRef as string,
-      name: name as string,
-      id: id as string,
-      scale: scale?.toString() || "",
-      decimals: decimals as string,
-      format: format as string,
-    };
-
-    onTag(conceptName as string, tagType as string, attributes);
+  const handleTagClick = (concept: any) => {
+    onTag(concept);
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-75">
-      <div className="bg-white rounded-lg p-4 h-fit w-3/4 overflow-auto">
-        <h2 className="text-xl font-bold mb-4">Select a Tag</h2>
-        <div className="overflow-y-auto max-h-96">
-          <h3 className="text-lg font-semibold mb-2">Financial Statement Tags</h3>
-          <ul className="space-y-2 mb-4">
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-800 bg-opacity-75 overflow-auto">
+      <div className="bg-white rounded-lg px-4 pb-4 w-5/6 h-2/3 overflow-y-auto">
+        <div className="sticky top-0 bg-white flex justify-between border-b border-gray-200">
+          <h2 className="text-2xl font-bold my-2">Select a Tag</h2>
+          <button
+            onClick={onClose}
+            className=" my-2 bg-red-500 text-white px-4 py-2 rounded"
+          >
+            Close
+          </button>
+        </div>
+        <div className="mb-4">
+          <h3 className="font-semibold">Financial Statement</h3>
+          <ul>
             {taxonomyData.FinancialStatement.map((concept) => (
               <li
-                key={concept.conceptName as string}
-                className="cursor-pointer p-2 hover:bg-gray-200 border-b border-gray-300"
+                key={concept.conceptName}
+                className="cursor-pointer p-2 hover:bg-gray-200"
                 onClick={() => handleTagClick(concept)}
               >
-                {concept.conceptName as string}
-              </li>
-            ))}
-          </ul>
-          <h3 className="text-lg font-semibold mb-2">Tax Computation Tags</h3>
-          <ul className="space-y-2">
-            {taxonomyData.TaxComputation.map((concept) => (
-              <li
-                key={concept.conceptName as string}
-                className="cursor-pointer p-2 hover:bg-gray-200 border-b border-gray-300"
-                onClick={() => handleTagClick(concept)}
-              >
-                {concept.conceptName as string}
+                {concept.conceptName}
               </li>
             ))}
           </ul>
         </div>
-        <button
-          onClick={onClose}
-          className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Close
-        </button>
+        <div>
+          <h3 className="font-semibold">Tax Computation</h3>
+          <ul>
+            {taxonomyData.TaxComputation.map((concept) => (
+              <li
+                key={concept.conceptName}
+                className="cursor-pointer p-2 hover:bg-gray-200"
+                onClick={() => handleTagClick(concept)}
+              >
+                {concept.conceptName}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

@@ -7,13 +7,19 @@ import { useState, useRef } from "react";
 import { Tooltip } from "react-tooltip";
 import { saveAs } from "file-saver";
 import "react-tooltip/dist/react-tooltip.css";
-import taxonomyData from "@/taxonomyData.json"; // Adjust the path based on your project structure
+import taxonomyData from "@/taxonomyData.json";
+
+export interface TaggedConcept {
+  concept: typeof taxonomyData.FinancialStatement[0] | typeof taxonomyData.TaxComputation[0];
+  value: string;
+}
 
 export default function HomePage() {
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
   const [isTaggingModalOpen, setIsTaggingModalOpen] = useState<boolean>(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
   const [fileType, setFileType] = useState<string | null>(null);
+  const [taggedConcepts, setTaggedConcepts] = useState<TaggedConcept[]>([]);
 
   const selectedText = useRef<string>("");
 
@@ -21,19 +27,27 @@ export default function HomePage() {
     selectedText.current = highlightedText;
   };
 
-  const handleTag = (
-    tagName: string,
-    tagType: string,
-    attributes: Record<string, string>
-  ) => {
+  const handleTag = (concept: typeof taxonomyData.FinancialStatement[0] | typeof taxonomyData.TaxComputation[0]) => {
     if (htmlContent && selectedText.current) {
-      const taggedText = `<span class="tagged tooltip" style="background-color: yellow" data-tooltip-id="tagged element" data-tooltip-content="${tagName}" data-tooltip-place="top">
-                            <ix:${tagType} ${Object.entries(attributes)
-        .map(([key, value]) => `${key}="${value}"`)
-        .join(" ")}>
-                              ${selectedText.current}
-                            </ix:${tagType}>
-                          </span>`;
+      const attributes = {
+        contextRef: concept.contextRef,
+        unitRef: concept.unitRef,
+        name: concept.name,
+        id: concept.id,
+        scale: concept.scale,
+        decimals: concept.decimals,
+        format: concept.format,
+      };
+
+      const taggedText = 
+        `<span class="tagged tooltip" style="background-color: yellow" data-tooltip-id="tagged element" data-tooltip-content="${
+          concept.conceptName
+          }" data-tooltip-place="top">
+            <ix:${concept.tagType} 
+              ${Object.entries(attributes).map(([key, value]) => `${key}="${value}"`).join(" ")}>
+                ${selectedText.current}
+            </ix:${concept.tagType}>
+          </span>`;
 
       const updatedHtmlContent = htmlContent.replace(
         selectedText.current,
@@ -41,7 +55,10 @@ export default function HomePage() {
       );
 
       setHtmlContent(updatedHtmlContent);
-      selectedText.current = "";
+
+      // Add the concept to the tags array
+      setTaggedConcepts([...taggedConcepts, { concept, value: selectedText.current }]);
+      selectedText.current = ""
     }
   };
 
@@ -127,12 +144,11 @@ export default function HomePage() {
         isOpen={isTaggingModalOpen}
         onClose={() => setIsTaggingModalOpen(false)}
         onTag={handleTag}
-        taxonomyData={taxonomyData}
       />
       <PreviewModal
         isOpen={isPreviewModalOpen}
         onClose={() => setIsPreviewModalOpen(false)}
-        htmlContent={htmlContent || ""}
+        taggedConcepts={taggedConcepts}
       />
 
       <Tooltip id="tagged element" />

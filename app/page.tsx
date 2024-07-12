@@ -81,7 +81,7 @@ export default function HomePage() {
       let xhtmlString = `<?xml version="1.0" encoding="UTF-8"?>\n`;
       xhtmlString += `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n`;
       xhtmlString += `<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ix="http://www.xbrl.org/2013/inlineXBRL" xmlns:link="http://www.xbrl.org/2003/linkbase" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:utr="http://www.xbrl.org/2009/utr" xmlns:xbrli="http://www.xbrl.org/2003/instance" xmlns:ixt="http://www.xbrl.org/inlineXBRL/transformation/2020-02-12" xmlns:iso4217="http://www.xbrl.org/2003/iso4217" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xbrldi="http://xbrl.org/2006/xbrldi" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xl="http://www.xbrl.org/2003/XLink" xmlns:nonnum="http://www.xbrl.org/dtr/type/non-numeric" xmlns:num="http://www.xbrl.org/dtr/type/numeric" xmlns:${namespacePrefix}="${namespaceURI}">\n`;
-      xhtmlString += `<head>\n<title>Exported XHTML</title>\n</head>\n`;
+      xhtmlString += `<head>\n<title>Exported XHTML</title>\n<style>\n.table-auto { width: auto; border-collapse: collapse; }\n.border { border: 1px solid black; }\n.p-2 { padding: 8px; }\n</style>\n</head>\n`;
       xhtmlString += `<body>\n<ix:references xml:lang="en">\n<link:schemaRef xlink:type="simple" xlink:href="${entryPoint}"></link:schemaRef>\n</ix:references>\n`;
 
       const serializer = new XMLSerializer();

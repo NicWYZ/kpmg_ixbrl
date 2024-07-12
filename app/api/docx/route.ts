@@ -19,13 +19,17 @@ export async function POST(req: NextRequest) {
     const options = {
       styleMap: [
         "u => span.style-underlined",
+        "table => table.table-auto",
       ]
     };
 
     const result = await mammoth.convertToHtml({ buffer }, options);
-    console.log(result.value)
+    let html = result.value;
 
-    return NextResponse.json({ html: result.value }, { status: 200 });
+    // Post-process the HTML to add class names to tr and td elements
+    html = html.replace(/<td>/g, '<td class="border">');
+
+    return NextResponse.json({ html }, { status: 200 });
   } catch (error) {
     console.error('Error processing the file:', error);
     return NextResponse.json({ error: 'Error processing the file' }, { status: 500 });

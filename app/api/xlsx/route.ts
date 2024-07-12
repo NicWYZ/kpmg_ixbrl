@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     await workbook.xlsx.load(buffer);
 
     // Convert the Excel data to HTML
-    let html = '<table class="table-auto border-collapse border border-gray-400">';
+    let html = '<table class="table-auto">';
 
     workbook.eachSheet((sheet) => {
       const merges: { [key: string]: { master: string; rowspan: number; colspan: number } } = {};
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       });
 
       sheet.eachRow((row) => {
-        html += '<tr class="border border-gray-300">';
+        html += '<tr class="border">';
         row.eachCell({ includeEmpty: true }, (cell) => {
           const cellAddress = `${cell.row}:${cell.col}`;
           const merge = merges[cellAddress];
@@ -54,9 +54,9 @@ export async function POST(req: NextRequest) {
           if (merge && cell.address === merge.master) {
             const rowspan = merge.rowspan;
             const colspan = merge.colspan;
-            html += `<td class="border border-gray-300 p-2" rowspan="${rowspan}" colspan="${colspan}">${cell.value}</td>`;
+            html += `<td class="border p-2" rowspan="${rowspan}" colspan="${colspan}">${cell.value}</td>`;
           } else if (!merge) {
-            html += `<td class="border border-gray-300 p-2">${cell.value !== null ? cell.value : ''}</td>`;
+            html += `<td class="border p-2">${cell.value !== null ? cell.value : ''}</td>`;
           }
         });
         html += '</tr>';

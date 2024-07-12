@@ -29,21 +29,14 @@ export default function HomePage() {
 
   const handleTag = (concept: typeof taxonomyData.FinancialStatement[0] | typeof taxonomyData.TaxComputation[0]) => {
     if (htmlContent && selectedText.current) {
-      const attributes = {
-        contextRef: concept.contextRef,
-        unitRef: concept.unitRef,
-        name: concept.name,
-        id: concept.id,
-        scale: concept.scale,
-        decimals: concept.decimals,
-        format: concept.format,
-      };
+      const {contextRef, unitRef, name, id, scale, decimals, format, tagType, conceptName} = concept;
+      const attributes = {contextRef, unitRef, name, id, scale, decimals,format};
 
       const taggedText = 
         `<span class="tagged tooltip" style="background-color: yellow" data-tooltip-id="tagged element" data-tooltip-content="${
-          concept.conceptName
+          conceptName
           }" data-tooltip-place="top">
-            <ix:${concept.tagType} 
+            <ix:${tagType} 
               ${Object.entries(attributes).map(([key, value]) => `${key}="${value}"`).join(" ")}>
                 ${selectedText.current}
             </ix:${concept.tagType}>
@@ -60,7 +53,7 @@ export default function HomePage() {
       setTaggedConcepts([...taggedConcepts, { concept, value: selectedText.current }]);
       selectedText.current = ""
     }
-  };
+  } 
 
   const handleExport = () => {
     if (!htmlContent) return;
